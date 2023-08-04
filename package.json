@@ -1,5 +1,5 @@
 {
-  "name": "react-native-recoil-persist",
+  "name": "react-native-recoil-persist-zod",
   "version": "0.0.6",
   "description": "React Native Recoil Persist is used to persist Recoil state to AsyncStorage",
   "main": "build/index.js",
