@@ -2,25 +2,23 @@ import React, { useEffect, useState } from "react";
 import { ReactNativeRecoilPersist } from "./";
 
 type Props = {
-  store: ReactNativeRecoilPersist;
+  stores: ReactNativeRecoilPersist[];
   fallback?: React.ReactNode;
-  onInit?: () => void;
+  onInit?: (store: ReactNativeRecoilPersist) => void;
   children?: any;
 };
 
-export const ReactNativeRecoilPersistGate: React.FC<Props> = ({
-  store,
-  children,
-  fallback,
-  onInit,
-}) => {
+export const ReactNativeRecoilPersistGate: React.FC<Props> = ({ stores, children, fallback, onInit }) => {
   const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {
-    store.init().then(() => {
+    (async () => {
+      for (let i = 0; i < stores.length; i++) {
+        await stores[i].init();
+        onInit && onInit(stores[i]);
+      }
       setHasLoaded(true);
-      onInit && onInit();
-    });
+    })();
   }, []);
 
   return <>{hasLoaded ? children : fallback || null}</>;

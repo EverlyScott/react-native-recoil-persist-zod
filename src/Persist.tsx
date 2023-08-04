@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AtomEffect, DefaultValue } from "recoil";
+import { ZodTypeAny } from "zod";
 
 interface StorageInterface {
   getItem: (localStorageKey: string) => Promise<string | null>;
@@ -11,15 +12,15 @@ export const defaultStorageInterface: StorageInterface = {
   mergeItem: AsyncStorage.mergeItem,
 };
 
-export const defaultLocalStorageKey: string =
-  "asyncRecoilPersistStorageReactNative";
+export const defaultLocalStorageKey: string = "asyncRecoilPersistStorageReactNative";
 
 export class ReactNativeRecoilPersist {
   private cachedState: Record<string, any> = {};
 
   constructor(
-    private storageHandlers: StorageInterface = defaultStorageInterface,
-    private key: string = defaultLocalStorageKey
+    private zodType: ZodTypeAny,
+    private key: string = defaultLocalStorageKey,
+    private storageHandlers: StorageInterface = defaultStorageInterface
   ) {}
 
   public init = async () => {
@@ -41,7 +42,14 @@ export class ReactNativeRecoilPersist {
       return {};
     }
     try {
-      return JSON.parse(state);
+      const json: any = JSON.parse(state);
+      const zod = this.zodType.safeParse(json);
+      if (zod.success) {
+        return zod.data;
+      } else {
+        console.error(zod.error);
+        return json;
+      }
     } catch (e) {
       console.error(e);
       return {};
@@ -50,7 +58,13 @@ export class ReactNativeRecoilPersist {
 
   private setState = async (state: any): Promise<void> => {
     try {
-      await this.storageHandlers.mergeItem(this.key, JSON.stringify(state));
+      const zod = this.zodType.safeParse(state);
+      if (zod.success) {
+        await this.storageHandlers.mergeItem(this.key, JSON.stringify(zod.data));
+      } else {
+        console.log(zod.error);
+        await this.storageHandlers.mergeItem(this.key, JSON.stringify(state));
+      }
     } catch (e) {
       console.error(e);
     }

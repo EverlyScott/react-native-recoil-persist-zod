@@ -20,9 +20,7 @@ Add the `ReactNativeRecoilPersistGate` as the first component inside of the `Rec
 
 ```javascript
 import React from "react";
-import ReactNativeRecoilPersist, {
-  ReactNativeRecoilPersistGate,
-} from "react-native-recoil-persist";
+import ReactNativeRecoilPersist, { ReactNativeRecoilPersistGate } from "react-native-recoil-persist";
 import { RecoilRoot } from "recoil";
 
 export const AppRoot = () => {
@@ -46,7 +44,7 @@ const testAtom = atom({
   default: "I am a test",
   key: "test",
   // Add this effect to the atom to persist it
-  effects_UNSTABLE: [ReactNativeRecoilPersist.persistAtom],
+  effects: [new ReactNativeRecoilPersist(zodType, "test")],
 });
 ```
 

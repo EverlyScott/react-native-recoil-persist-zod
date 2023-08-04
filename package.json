@@ -25,5 +25,8 @@
   },
   "scripts": {
     "build": "yarn tsc --project ./tsconfig.json"
+  },
+  "dependencies": {
+    "zod": "^3.21.4"
   }
 }
